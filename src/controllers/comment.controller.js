@@ -1,7 +1,7 @@
 // import mongoose from "mongoose"
 import {Comment} from "../models/comment.models.js"
 import {Video} from '../models/video.models.js'
-import {ApiError} from "../utils/ApiError.js"
+import {ApiError} from "../utils/apiError.js"
 // import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
