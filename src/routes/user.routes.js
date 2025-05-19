@@ -1,38 +1,38 @@
 import { Router } from 'express'
 import {
+    registerUser,
+    loginUser,
+    logOutUser,
+    refreshAccessToken,
     changeCurrentUserPassword,
     getCurrentUser,
-    getUserById,
-    getUserChannelProfile,
-    getWatchHistory,
-    logOutUser,
-    loginUser,
-    refreshAccessToken,
-    registerUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImg
+    updateUserCoverImg,
+    getUserChannelProfile,
+    getWatchHistory, 
+    getUserById
 } from '../controllers/user.controller.js';
 import { upload } from '../middlewares/multer.middleware.js'
 import { verifyJWT, verifyJwtForUpdatingUserDetails } from '../middlewares/auth.middleware.js';
 
 const router = Router()
 
-router.route("/register").post(
-    upload.fields([
-        {
-            name: "avatar",
-            maxCount: 1,
+// router.route("/register").post(
+//     upload.fields([
+//         {
+//             name: "avatar",
+//             maxCount: 1,
 
-        }, {
-            name: "coverImage",
-            maxCount: 1,
-        }
-    ]),
-    registerUser)
+//         }, {
+//             name: "coverImage",
+//             maxCount: 1,
+//         }
+//     ]),
+//     registerUser)
 
 
-router.route("/login").post(loginUser)
+// router.route("/login").post(loginUser)
 
 //secured Routes
 router.route("/logout").post(verifyJWT, logOutUser)
