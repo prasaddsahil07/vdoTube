@@ -11,10 +11,10 @@ import {verifyJWT} from "../middlewares/auth.middleware.js"
 const router = Router();
 router.use(verifyJWT);
 
-router.route("/toggle/v/:videoId").post(toggleVideoLike);
-router.route("/toggle/c/:commentId").post(toggleCommentLike);
-router.route("/videos").get(getLikedVideos);
-router.route("/isLiked/v/:Id").get(checkIfVideoAlreadyLiked);
-router.route("/isLiked/c/:Id").get(checkIfCommentAlreadyLiked);
+router.post("/toggle/v/:videoId", toggleVideoLike);
+router.post("/toggle/c/:commentId", toggleCommentLike);
+router.get("/videos", getLikedVideos);
+router.get("/isLiked/v/:Id", checkIfVideoAlreadyLiked);
+router.get("/isLiked/c/:Id", checkIfCommentAlreadyLiked);
 
 export default router

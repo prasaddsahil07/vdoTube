@@ -9,12 +9,13 @@ import {
 import {verifyJWT} from "../middlewares/auth.middleware.js";
 
 const router = Router();
-console.log('verifyJWT middleware:', verifyJWT); // should log a function
 
 router.use(verifyJWT);
-router.route("/").post(createTweet);
-router.route("/user/:userId").get(getUserTweets);
-router.route("/getAllTweets").get(getAllTweets);
-router.route("/:tweetId").patch(updateTweet).delete(deleteTweet);
+
+router.post("/", createTweet);
+router.get("/user/:userId", getUserTweets);
+router.get("/getAllTweets", getAllTweets);
+router.patch("/:tweetId", updateTweet);
+router.delete("/:tweetId", deleteTweet);
 
 export default router;

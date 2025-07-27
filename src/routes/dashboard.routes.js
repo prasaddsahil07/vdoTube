@@ -6,8 +6,8 @@ const router = Router();
 
 router.use(verifyJWT);
 
-router.route("/stats/:channelId").get(getChannelStats);
-router.route("/videos/:channelId").get(getChannelVideos);
-router.route("/videos/getAllPublishedVideos/published").get(getAllVideos);
+router.get("/stats/:channelId", getChannelStats);
+router.get("/videos/:channelId", getChannelVideos);
+router.get("/videos/getAllPublishedVideos/published", getAllVideos);
 
 export default router;
