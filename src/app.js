@@ -15,6 +15,11 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Welcome to VdoTube API" })
+});
+
+
 //routes import
 import userRouter from './routes/user.routes.js'
 import healthcheckRouter from "./routes/healthcheck.routes.js"
