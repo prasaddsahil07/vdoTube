@@ -160,7 +160,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
             name,
             description
         }
-    }, {$new:true});
+    }, {new : true});
 
     if(!updatedPlaylist){
         return res.status(400).json({msg:"failed to update playlist"});
