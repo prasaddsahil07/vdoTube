@@ -36,7 +36,7 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
     const userPlaylists = await Playlist.find(filters);
 
-    if (!userPlaylists) {
+    if (userPlaylists.length === 0) {
         return res.status(404).json({ msg: "Can't find any playlist for this user" })
     }
 
