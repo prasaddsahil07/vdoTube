@@ -55,42 +55,67 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     return res.status(200).json({ msg: "playlist fetched successfully", data: playlist });
 })
 
+
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params;
+
+    // Ensure the video exists
     const video = await Video.findById(videoId);
-    const playlist = await Playlist.findById(playlistId);
-
-
     if (!video) {
-        return res.status(404).json({ msg: "Can't found video with this videoId" });
+        return res.status(404).json({ msg: "Can't find video with this videoId" });
     }
 
-    // Check if the video is already in the playlist
-    if (!playlist) {
-        return res.status(404).json({ msg: "Can't find playlist with this playlistId" });
-    }
-
-    const existingVideoIndex = playlist.videos.findIndex(vid => vid.video.toString() === videoId);
-
-    if (existingVideoIndex !== -1) {
-        return res.status(400).json({ msg: "Video already exists in the playlist" });
-    }
-
-    const videoData = {
-        video: videoId,
-        thumbnail: video.thumbnail
-    }
-
-    const addVideo = await Playlist.findByIdAndUpdate(playlistId, { $addToSet: { videos: videoData } }, // Use $push to add the videoId to the videos array
-        { new: true } // To return the updated playlist after the update
+    // Only add video if it doesn't already exist in playlist
+    const updatedPlaylist = await Playlist.findOneAndUpdate(
+        { _id: playlistId, "videos.video": { $ne: videoId } }, // condition: playlist exists AND video not already inside
+        { $push: { videos: { video: videoId, thumbnail: video.thumbnail } } }, // push video to array
+        { new: true } // return updated playlist
     );
 
-    if (!addVideo) {
-        return res.status(402).json({ msg: "Video can not be added to the playlist" });
+    if (!updatedPlaylist) {
+        // Means playlist not found OR video already in playlist
+        return res.status(400).json({ msg: "Video already exists in the playlist or playlist not found" });
     }
 
-    return res.status(200).json({ msg: "Video added to playlist successfully", data: addVideo });
+    return res.status(200).json({ msg: "Video added to playlist successfully", data: updatedPlaylist });
 })
+
+// const addVideoToPlaylist = asyncHandler(async (req, res) => {
+//     const { playlistId, videoId } = req.params;
+//     const video = await Video.findById(videoId);
+//     const playlist = await Playlist.findById(playlistId);
+
+
+//     if (!video) {
+//         return res.status(404).json({ msg: "Can't found video with this videoId" });
+//     }
+
+//     // Check if the video is already in the playlist
+//     if (!playlist) {
+//         return res.status(404).json({ msg: "Can't find playlist with this playlistId" });
+//     }
+
+//     const existingVideoIndex = playlist.videos.findIndex(vid => vid.video.toString() === videoId);
+
+//     if (existingVideoIndex !== -1) {
+//         return res.status(400).json({ msg: "Video already exists in the playlist" });
+//     }
+
+//     const videoData = {
+//         video: videoId,
+//         thumbnail: video.thumbnail
+//     }
+
+//     const addVideo = await Playlist.findByIdAndUpdate(playlistId, { $addToSet: { videos: videoData } }, // Use $push to add the videoId to the videos array
+//         { new: true } // To return the updated playlist after the update
+//     );
+
+//     if (!addVideo) {
+//         return res.status(402).json({ msg: "Video can not be added to the playlist" });
+//     }
+
+//     return res.status(200).json({ msg: "Video added to playlist successfully", data: addVideo });
+// })
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const { playlistId, videoId } = req.params
