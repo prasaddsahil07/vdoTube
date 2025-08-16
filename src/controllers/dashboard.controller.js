@@ -46,7 +46,7 @@ const getChannelVideos = asyncHandler(async (req, res) => {
     const videos = await Video.find({
         owner: channelId
     })
-    if (!videos) {
+    if (videos.length === 0) {
         return res.status(404).json({ msg: "Videos can not be found", })
     }
     res.status(200).json({ msg: "Videos of this channel fetched successfully", data: videos })
@@ -56,7 +56,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const videos = await Video.find({
         isPublished: true
     })
-    if (!videos) {
+    if (videos.length === 0) {
         return res.status(404).json({ msg: "Videos can not be found", })
     }
     res.status(200).json({ msg: "Videos has been fetched successfully", data: videos })

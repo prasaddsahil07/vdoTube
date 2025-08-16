@@ -27,8 +27,8 @@ const getUserTweets = asyncHandler(async (req, res) => {
     // Fetch videos with pagination, filtering, and sorting
     const tweets = await Tweet.find(filters);
 
-    if (!tweets) {
-        return res.status(500).json({ success: false, error: 'Server error' });
+    if (tweets.length === 0) {
+        return res.status(404).json({ success: false, error: 'No tweets found' });
     }
 
     return res.status(200).json({ success: true, data: tweets });
@@ -42,13 +42,11 @@ const updateTweet = asyncHandler(async (req, res) => {
         return res.status(200).json({ msg: "Please enter some text" });
     }
 
-    const updatedTweet = await Tweet.findByIdAndUpdate(tweetId,
-        {
-            $set: {
-                content: tweet
-            }
-        },
-        { new: true });
+    const updatedTweet = await Tweet.findOneAndUpdate(
+        { _id: tweetId, owner: req.user._id }, 
+        { $set: { content: tweet } },
+        { new: true }
+    );
 
     return res.status(200).json({ msg: "tweet updated successfully", data: updatedTweet });
 })
@@ -56,13 +54,19 @@ const updateTweet = asyncHandler(async (req, res) => {
 const deleteTweet = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
 
-    const response = await Tweet.findByIdAndDelete(tweetId);
+    const deleted = await Tweet.findOneAndDelete({ _id: tweetId, owner: req.user._id });
+    if (!deleted) {
+        return res.status(404).json({ msg: "Tweet not found or unauthorized" });
+    }
 
     return res.status(200).json({ msg: "tweet deleted successfully", data: response });
 })
 
 const getAllTweets = asyncHandler(async (req, res) => {
-    const tweets = await Tweet.find();
+    const tweets = await Tweet.find()
+    .sort({ createdAt: -1 })
+    .limit(10)
+    .skip((page - 1) * 10);
 
     if (!tweets) {
         return res.status(500).json({ success: false, error: 'Server error' });

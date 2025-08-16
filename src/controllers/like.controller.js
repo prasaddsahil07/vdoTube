@@ -68,6 +68,43 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 })
 
 
+const toggleTweetLike = asyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+    const userId = req.user._id;
+
+    const alreadyLiked = await Like.findOne({ tweet: tweetId, likedBy: userId });
+
+    if (alreadyLiked) {
+        await Like.deleteOne({ tweet: tweetId, likedBy: userId });
+        return res.json({ liked: false });
+    }
+
+    await Like.create({ tweet: tweetId, likedBy: userId });
+    return res.json({ liked: true });
+})
+
+
+const getLikedTweets = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const likedTweets = await Like.aggregate([
+        { $match: { likedBy: userId, tweet: { $exists: true } } },
+        { $lookup: {
+            from: "tweets",
+            localField: "tweet",
+            foreignField: "_id",
+            as: "LikedTweet"
+        }}
+    ]);
+
+    const filteredLikedTweets = likedTweets.filter(t => t.LikedTweet.length > 0);
+    const likedTweetArray = filteredLikedTweets.map(t => t.LikedTweet);
+
+    return res.status(200).json({ data: likedTweetArray });
+})
+
+
+
 const getLikedVideos = asyncHandler(async (req, res) => {
     const userId = req.user._id
 
@@ -104,6 +141,19 @@ const checkIfVideoAlreadyLiked = asyncHandler(async (req,res)=>{
     return res.status(200).json(responseData)
   
 })
+
+const checkIfTweetAlreadyLiked = asyncHandler(async (req, res) => {
+    const { Id } = req.params; // tweet ID
+    const userId = req.user._id;
+
+    const tweetLike = await Like.findOne({ likedBy: userId, tweet: Id });
+
+    return res.status(200).json({
+        liked: !!tweetLike,
+        msg: !!tweetLike ? 'Tweet already liked' : 'Tweet not liked'
+    });
+})
+
 
 const checkIfCommentAlreadyLiked = asyncHandler(async (req,res)=>{
     const {Id} = req.params

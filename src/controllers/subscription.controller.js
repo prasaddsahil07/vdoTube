@@ -11,26 +11,17 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
     try {
         // Check if the user is already subscribed to the channel
-        const existingSubscription = await Subscription.findOne({
+        const existingSubscription = await Subscription.findOneAndDelete({
             subscriber: userId,
             channel: channelId
         });
-
         if (existingSubscription) {
-            // If the user is already subscribed, unsubscribe
-            await Subscription.deleteOne({
-                subscriber: userId,
-                channel: channelId
-            });
-            res.json({ subscribed: false });
-        } else {
-            // If the user is not subscribed, subscribe
-            await Subscription.create({
-                subscriber: userId,
-                channel: channelId
-            });
-            res.json({ subscribed: true });
+            return res.json({ subscribed: false, msg: "Unsubscribed successfully" });
         }
+        
+        await Subscription.create({ subscriber: userId, channel: channelId });
+        return res.json({ subscribed: true, msg: "Subscribed successfully" });
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ msg: "Server Error" });
