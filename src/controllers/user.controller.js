@@ -61,6 +61,9 @@ const registerUser = async (req, res) => {
 
         //upload images to cloudinary
         const avatar = await uploadOnCloudinary(avatarLocalPath)        // if localpath is missing in avatar then cloudinary automatically returns empty string
+
+        // console.log("Avatar uploaded:", avatar);
+
         const coverImage = await uploadOnCloudinary(coverImageLocalPath)    // if localpath is missing in coverImage then cloudinary automatically returns empty string
 
         //checking if avatar field successfully uploaded
@@ -139,7 +142,9 @@ const loginUser = async (req, res) => {
             .cookie("refreshToken", refreshToken, options)
             .json({
                 msg: "User logged in successfully",
-                user: loggedInUser
+                user: loggedInUser,
+                accessToken,
+                refreshToken
             });
 
     } catch (error) {

@@ -7,6 +7,12 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")   // request has cookie ka access     header is for mobile application
 
+        console.log("Cookies:", req.cookies);
+        console.log("Authorization header:", req.header("Authorization"));
+        console.log("Extracted token:", token);
+        console.log("Token type:", typeof token);
+        console.log("Token length:", token?.length);
+
         if (!token) {
             throw new ApiError(401, "unauthorized Request")
         }
@@ -23,6 +29,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
 
         next()
     } catch (error) {
+        console.log("jwt error hai bhai");
         throw new ApiError(401, error.message || "something went wrong while verifing token")
 
     }
