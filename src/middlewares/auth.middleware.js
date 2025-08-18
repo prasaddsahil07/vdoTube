@@ -5,6 +5,8 @@ import { User } from "../models/user.models.js";
 
 export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
+
+        // console.log("Verifying jwt: ", req.cookies?.accessToken);
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")   // request has cookie ka access     header is for mobile application
 
         if (!token) {
