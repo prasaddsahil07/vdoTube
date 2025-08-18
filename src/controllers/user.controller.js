@@ -130,11 +130,12 @@ const loginUser = async (req, res) => {
         // Fetch user without sensitive fields
         const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
-        // Set secure HTTP-only cookies
+        // Set secure HTTP-only cookies (set to true if the frontend is not storing tokens in localStorage)
         const options = {
-            httpOnly: true,
-            secure: true
+            httpOnly: false,
+            secure: false
         };
+
 
         return res
             .status(200)
@@ -142,9 +143,7 @@ const loginUser = async (req, res) => {
             .cookie("refreshToken", refreshToken, options)
             .json({
                 msg: "User logged in successfully",
-                user: loggedInUser,
-                accessToken,
-                refreshToken
+                user: loggedInUser
             });
 
     } catch (error) {

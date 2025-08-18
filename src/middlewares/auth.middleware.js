@@ -7,12 +7,6 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     try {
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")   // request has cookie ka access     header is for mobile application
 
-        console.log("Cookies:", req.cookies);
-        console.log("Authorization header:", req.header("Authorization"));
-        console.log("Extracted token:", token);
-        console.log("Token type:", typeof token);
-        console.log("Token length:", token?.length);
-
         if (!token) {
             throw new ApiError(401, "unauthorized Request")
         }
@@ -25,7 +19,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
             throw new ApiError(401, "Invalid Access Token")
         }
 
-        req.user = user     // here we are adding this "user" object to the request and assigning it the verified user and this will be helpful in LogOut controller because we can take this req.user and logit .
+        req.user = user     // here we are adding this "user" object to the request and assigning it the verified user and this will be helpful in LogOut controller because we can take this req.user and logit.
 
         next()
     } catch (error) {
