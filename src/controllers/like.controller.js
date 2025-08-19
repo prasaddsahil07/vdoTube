@@ -87,6 +87,8 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 const getLikedTweets = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
+    console.log("Before likedTweets")
+
     const likedTweets = await Like.aggregate([
         { $match: { likedBy: userId, tweet: { $exists: true } } },
         { $lookup: {
@@ -96,6 +98,8 @@ const getLikedTweets = asyncHandler(async (req, res) => {
             as: "LikedTweet"
         }}
     ]);
+
+    console.log("After likedTweets")
 
     const filteredLikedTweets = likedTweets.filter(t => t.LikedTweet.length > 0);
     const likedTweetArray = filteredLikedTweets.map(t => t.LikedTweet);

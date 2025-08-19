@@ -63,17 +63,21 @@ const deleteTweet = asyncHandler(async (req, res) => {
 })
 
 const getAllTweets = asyncHandler(async (req, res) => {
-    const tweets = await Tweet.find()
-    .sort({ createdAt: -1 })
-    .limit(10)
-    .skip((page - 1) * 10);
+    const page = 1;
+    const limit = 10;
 
-    if (!tweets) {
-        return res.status(500).json({ success: false, error: 'Server error' });
+    const tweets = await Tweet.find()
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .skip((page - 1) * limit);
+
+    if (tweets.length === 0) {
+        return res.status(404).json({ success: false, error: "No tweets found" });
     }
 
     return res.status(200).json({ success: true, data: tweets });
-})
+});
+
 
 export {
     createTweet,
