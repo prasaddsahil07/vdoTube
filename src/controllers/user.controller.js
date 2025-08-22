@@ -514,6 +514,8 @@ const getUserById = async (req, res) => {
     try {
         const { userId } = req.params
 
+        console.log("User: ", userId)
+
         const user = await User.findById(userId).select("-password -refreshToken")
         if (!user) {
             return res.status(404).json({ msg: 'No User found' })

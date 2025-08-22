@@ -71,15 +71,25 @@ const toggleCommentLike = asyncHandler(async (req, res) => {
 const toggleTweetLike = asyncHandler(async (req, res) => {
     const { tweetId } = req.params;
     const userId = req.user._id;
+    
+    // console.log("Id:", tweetId); // Debug log
 
-    const alreadyLiked = await Like.findOne({ tweet: tweetId, likedBy: userId });
+    const alreadyLiked = await Like.findOne({ 
+        tweet: tweetId, 
+        likedBy: userId 
+    });
 
     if (alreadyLiked) {
         await Like.deleteOne({ tweet: tweetId, likedBy: userId });
         return res.json({ liked: false });
     }
 
-    await Like.create({ tweet: tweetId, likedBy: userId });
+    const newLike = await Like.create({ 
+        tweet: tweetId, 
+        likedBy: userId 
+    });
+    
+    // console.log("Like created:", newLike); // Debug log
     return res.json({ liked: true });
 })
 
@@ -87,27 +97,21 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 const getLikedTweets = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
-    console.log("Before likedTweets")
+    const allLikes = await Like.find({ likedBy: userId });
 
     const likedTweets = await Like.aggregate([
         { $match: { likedBy: userId, tweet: { $exists: true } } },
         { $lookup: {
-            from: "tweets",
+            from: "tweets", // Make sure this collection name is correct
             localField: "tweet",
             foreignField: "_id",
             as: "LikedTweet"
-        }}
+        }},
+        { $match: { "LikedTweet.0": { $exists: true } } } // Only include successful lookups
     ]);
 
-    console.log("After likedTweets")
-
-    const filteredLikedTweets = likedTweets.filter(t => t.LikedTweet.length > 0);
-    const likedTweetArray = filteredLikedTweets.map(t => t.LikedTweet);
-
-    return res.status(200).json({ data: likedTweetArray });
+    return res.status(200).json({ data: likedTweets });
 })
-
-
 
 const getLikedVideos = asyncHandler(async (req, res) => {
     const userId = req.user._id
@@ -180,7 +184,10 @@ const checkIfCommentAlreadyLiked = asyncHandler(async (req,res)=>{
 export {
     toggleCommentLike,
     toggleVideoLike,
+    toggleTweetLike,
     getLikedVideos,
+    getLikedTweets,
     checkIfVideoAlreadyLiked, 
-    checkIfCommentAlreadyLiked
+    checkIfCommentAlreadyLiked,
+    checkIfTweetAlreadyLiked
 }
