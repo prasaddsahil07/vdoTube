@@ -136,14 +136,15 @@ const loginUser = async (req, res) => {
             secure: false
         };
 
-
         return res
             .status(200)
             .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json({
                 msg: "User logged in successfully",
-                user: loggedInUser
+                user: loggedInUser,
+                accessToken,
+                refreshToken
             });
 
     } catch (error) {
