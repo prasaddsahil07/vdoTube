@@ -185,7 +185,12 @@ src/
 └── index.js            # Server entry point
 ```
 
+## Schema Modelling
+<img width="544" height="456" alt="Screenshot (364)" src="https://github.com/user-attachments/assets/45b755d4-4e64-45b4-ad23-e1a0858281bc" />
+
 ## Contributing
+
+
 
 1. Fork the repository
 2. Create a feature branch
